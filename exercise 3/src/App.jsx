@@ -24,6 +24,30 @@ const ORDERS = [
 export default function App() {
   const [orders, setOrders] = React.useState(ORDERS);
 
+  const handleIncrease = (index) => {
+    setOrders((prevOrder) =>
+      prevOrder.map((order, i) =>
+        i === index && order.quantity > 0 
+        ? { ...order, quantity: order.quantity + 1 } 
+        : order
+      )
+    )
+  };
+
+  const handleDecrease = (index) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order, i) =>
+        i === index && order.quantity > 0
+          ? { ...order, quantity: order.quantity - 1 }
+          : order
+      )
+    );
+  };
+
+  const computeTotal = () => {
+    return orders.reduce((total, order) => total + order.price * order.quantity, 0).toFixed(2);
+  };
+
   return (
     <>
       <header>
@@ -31,10 +55,19 @@ export default function App() {
       </header>
 
       <div className="order-list">
-        <OrderCard></OrderCard>
+      {orders.map((order, index) => (
+          <OrderCard
+            key={index}
+            product={order.product}
+            price={order.price}
+            quantity={order.quantity}
+            onIncrease={() => handleIncrease(index)}
+            onDecrease={() => handleDecrease(index)}
+          />
+        ))}
       </div>
 
-      <CheckoutButton total="TODO"></CheckoutButton>
+      <CheckoutButton total={computeTotal()}></CheckoutButton>
     </>
   );
 }
